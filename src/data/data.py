@@ -1,10 +1,6 @@
 import torch
-from torch import utils
+import torchvision
 import pandas as pd
-import PIL
-
-import pathlib
-import os
 
 class MEM_Dataset(torch.utils.data.Dataset):
     def __init__(self, features_file, img_dir, transform=None, target_transform=None):
@@ -35,7 +31,7 @@ class MEM_Dataset(torch.utils.data.Dataset):
             sample = {
                 'sbj' : feature_dict['sbj'],
                 'trial' : feature_dict['trial'],
-                'image' : feature_dict['image'],
+                'image' : self.img_dir / feature_dict['image'],
                 'resp' : feature_dict['resp'],
                 'phase' : feature_dict['phase'],
             }
@@ -66,9 +62,13 @@ class MEM_Dataset(torch.utils.data.Dataset):
         return len(self.samples)
 
     def __getitem__(self, idx):
+
         target_sample = self.samples[idx]
 
         features = {k : v for k, v in target_sample.items() if k != 'phase'}
         label = target_sample['phase']
 
-        return features, label
+        features['image'] = torchvision.io.read_image(features['image']).float() / 255.0
+
+        return features, label # TODO return image, scanpath, label
+        # reason: better structure for eventual passing in training loop
