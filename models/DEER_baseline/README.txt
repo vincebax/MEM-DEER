@@ -2,11 +2,11 @@ DEER Baseline
 
 Purpose:
     - Get a model running to serve as a starting point for the project
-    - Train on the full dataset on purpose in order to ensure the model has the capacity to learn our data
+    - Ensure the training pipeline works correctly
     - Put off worries about generalization for later versions
 
 Dataset:
-    - full MEM dataset, no split
+    - MEM dataset, 80-20 train / validation split
     - target_scanpath_length = 4 (only consider first 4 fixations per scanpath)
 
 Modules:
@@ -52,11 +52,11 @@ Training:
     Epochs: 100
     Strategy:
         - freeze Image Encoder
-        - train Scanpath Encoder and Task Classifier on full dataset
+        - train Scanpath Encoder and Task Classifier on train set, evaluate on validation set after each epoch
 
 Notes:
     The learning curves dislay memorization, which is great news for the purpose of this experiement
-    This shows that the model has the capacity to fit the dataset, and that the training pipeline is working correctly
+    This shows that the model can fit the dataset, and that the training pipeline is working correctly
 
 Thoughts for next iteration:
     - Splitting by subject / images
