@@ -16,8 +16,13 @@ class ImageEncoder(nn.Module):
         self.backbone = models.densenet201(weights='DenseNet201_Weights.IMAGENET1K_V1')
         self.backbone.classifier = nn.Identity()
 
+        self.project = nn.Sequential(
+            nn.LazyLinear(256),
+            nn.ReLU()
+        )
+
     def forward(self, image):
-        return self.backbone(image)
+        return self.project(self.backbone(image))
 
 class ScanpathEncoder(nn.Module):
     """
@@ -31,9 +36,14 @@ class ScanpathEncoder(nn.Module):
 
         self.model = nn.GRU(input_size=input_size, hidden_size=hidden_size, batch_first=True)
 
+        self.project = nn.Sequential(
+            nn.LazyLinear(256),
+            nn.ReLU()
+        )
+
     def forward(self, scanpath):
         _, yhat = self.model(scanpath)
-        return yhat[-1]
+        return self.project(yhat[-1])
 
 class Fusion(nn.Module):
     """
